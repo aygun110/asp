@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header text-center fs-4">Пользователи</div> <!-- Исправлено закрытие тега -->
+
+                    <div class="card-body"> <!-- Добавлен card-body -->
+                        <form>
+                            <div class="mb-3">
+                                <!-- Здесь можно добавить поля формы -->
+                            </div>
+                        </form>
+                    </div> <!-- Закрываем card-body -->
+                </div> <!-- Закрываем card -->
+            </div> <!-- Закрываем col-md-8 -->
+        </div> <!-- Закрываем row -->
+    </div> <!-- Закрываем container -->
+</section>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::layout(~{::section})}">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход в систему</title>
+</head>
+<body>
+<section>
+    <div class="container mt-2 p-5">
+        <div class="row">
+            <div class="col-md-5 p-3">
+                <img alt="" src="img/sportschool.png" width="100%" height="400px">
+            </div>
+            <div class="col-md-6 p-2">
+                <div class="card shadow p-3 mb-5">
+                    <div class="card-header">
+                        <p class="fs-4 text-center">Регистрация</p>
+                    </div>
+                    <div class="card-body">
+                        <!-- Сообщение об ошибке, если оно есть -->
+                        <div th:if="${session.errorMsg}" th:text="${session.errorMsg}" class="alert alert-danger"></div>
+
+                        <!-- Сообщение об успешной регистрации, если оно есть -->
+                        <div th:if="${session.succMsg}" th:text="${session.succMsg}" class="alert alert-success"></div>
+
+                        <form action="/saveUser" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label class="form-label">ФИО</label>
+                                <input required class="form-control" name="name" type="text">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input required class="form-control" name="email" type="email">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Пароль</label>
+                                <input required class="form-control" name="password" type="password">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Пароль еще раз</label>
+                                <input required class="form-control" name="cpassword" type="password">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Profile Image</label>
+                                <input class="form-control" name="img" type="file">
+                            </div>
+                            <button type="submit" class="btn bg-primary text-white col-md-12">Зарегистрироваться</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
