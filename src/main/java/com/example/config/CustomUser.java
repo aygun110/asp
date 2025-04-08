@@ -5,22 +5,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 public class CustomUser implements UserDetails {
-    private UserDtls user;
+    private final UserDtls user;
 
     public CustomUser(UserDtls user) {
-        super();
         this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority= new SimpleGrantedAuthority(user.getRole());
-        return Arrays.asList(authority);
-        // Implement logic to return user roles/authorities, if needed. // Modify this as per your requirements
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole())); // Добавлено "ROLE_"
     }
 
     @Override
@@ -30,26 +27,26 @@ public class CustomUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getName();  // Assuming `getName` is your equivalent of username
+        return user.getEmail(); // Используем email как логин
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;  // Return true if the account is not expired, else return false
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;  // Return true if the account is not locked, else return false
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;  // Return true if the credentials are not expired, else return false
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return true;  // Assuming `isEnabled` is a field in `UserDtls`
+        return true;
     }
 }

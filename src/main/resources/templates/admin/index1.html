@@ -1,29 +1,21 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+ <!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base::layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title>Insert title here</title>
+    <title>Личный кабинет</title>
 </head>
 <body>
 <section>
+    <h1>Добро пожаловать!</h1>
 
-            <div class="col-md-4 mt-4">
-                <a href="/admin/users?type=1" class="text-decoration-none">
-                    <div class="card card-sh">
-                        <div class="card-body text-center text-primary">
-                            <i class="fa-solid fa-circle-user fa-3x"></i>
-                            <h4>Пользователи</h4>
-                        </div>
-                    </div>
-                </a>
-            </div>
+    <!-- Отображение ошибок, если есть -->
+    <div th:if="${session.errorMsg}" class="alert alert-danger" th:text="${session.errorMsg}"></div>
+    <div th:if="${session.succMsg}" class="alert alert-success" th:text="${session.succMsg}"></div>
 
-
-
-
-        </div>
-    </div>
+    <!-- Кнопка выхода -->
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-danger">Выйти</button>
+    </form>
 </section>
 </body>
-</html>

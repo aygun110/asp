@@ -1,13 +1,21 @@
-<!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org "
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base::layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
-    <title>User Hу</title>
+    <title>Личный кабинет</title>
 </head>
 <body>
 <section>
-    <h1> User Home page </h1>
+    <h1>Добро пожаловать!</h1>
+
+    <!-- Отображение ошибок, если есть -->
+    <div th:if="${session.errorMsg}" class="alert alert-danger" th:text="${session.errorMsg}"></div>
+    <div th:if="${session.succMsg}" class="alert alert-success" th:text="${session.succMsg}"></div>
+
+    <!-- Кнопка выхода -->
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-danger">Выйти</button>
+    </form>
 </section>
 </body>
 </html>

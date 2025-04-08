@@ -24,6 +24,7 @@
                         <!-- Сообщение об успешной регистрации, если оно есть -->
                         <div th:if="${session.succMsg}" th:text="${session.succMsg}" class="alert alert-success"></div>
 
+                        <!-- Форма регистрации -->
                         <form action="/saveUser" method="POST" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label class="form-label">ФИО</label>
@@ -38,13 +39,26 @@
                                 <input required class="form-control" name="password" type="password">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Пароль еще раз</label>
-                                <input required class="form-control" name="cpassword" type="password">
-                            </div>
-                            <div class="mb-3">
                                 <label class="form-label">Profile Image</label>
                                 <input class="form-control" name="img" type="file">
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Роль</label>
+                                <select class="form-control" name="role" required>
+                                    <option value="USER">Пользователь</option>
+                                    <option value="ADMIN">Админ</option>
+                                </select>
+                            </div>
+
+                            <!-- Новый выбор для деятельности -->
+                            <div class="mb-3">
+                                <label class="form-label">Деятельность</label>
+                                <select class="form-control" name="activity" required>
+                                    <option value="Тренер">Тренер</option>
+                                    <option value="Ученик">Ученик</option>
+                                </select>
+                            </div>
+
                             <button type="submit" class="btn bg-primary text-white col-md-12">Зарегистрироваться</button>
                         </form>
                     </div>
@@ -55,3 +69,4 @@
 </section>
 </body>
 </html>
+

@@ -7,11 +7,13 @@ import java.util.List;
 
 
 
-public interface UserRepository extends JpaRepository<UserDtls, Integer> {
+public interface UserRepository extends JpaRepository<UserDtls, Long> {
+    // Поиск пользователей по роли
+    List<UserDtls> findByRole(String role);
 
-    public UserDtls findByEmail(String email);
+    // Поиск пользователя по email
+    UserDtls findByEmail(String email);
 
-    public List<UserDtls> findByRole(String role);
-
-    public Boolean existsByEmail(String email);
+    // Проверка существования пользователя по email
+    Boolean existsByEmail(String email);
 }
