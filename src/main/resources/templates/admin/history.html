@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>История записей</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      background: #f8f9fa;
+    }
+
+    .registration-card {
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeInUp 0.6s ease both;
+    }
+
+    .registration-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-badge {
+      background-color: #e9ecef;
+      border-radius: 20px;
+      padding: 5px 12px;
+      margin: 5px 5px 5px 0;
+      font-size: 0.85em;
+      color: #495057;
+      display: flex;
+      align-items: center;
+    }
+
+    .teacher-name {
+      font-weight: 600;
+      color: #007bff;
+    }
+
+    .user-name {
+      font-weight: 600;
+      background-color: #0d6efd;
+      color: white;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 0.9em;
+    }
+
+    .action-buttons {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-sm-icon {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .text-muted {
+      font-size: 0.85em;
+    }
+
+    .filter-sort-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .filter-sort-bar input {
+      max-width: 230px;
+    }
+
+    .sort-buttons button {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-5">
+  <h2 class="mb-4">История записей к преподавателям</h2>
+
+  <!-- 🔍 Панель фильтрации и сортировки -->
+  <div class="filter-sort-bar">
+    <div class="d-flex gap-2">
+      <input type="text" id="filterInput" class="form-control" placeholder="Фильтр по преподавателю...">
+      <input type="text" id="userFilterInput" class="form-control" placeholder="Фильтр по пользователю...">
+    </div>
+    <div class="sort-buttons d-flex gap-2">
+      <button class="btn btn-outline-primary btn-sm" onclick="sortCards(true)">
+        <i class="fas fa-sort-amount-up"></i> Сначала старые
+      </button>
+      <button class="btn btn-outline-primary btn-sm" onclick="sortCards(false)">
+        <i class="fas fa-sort-amount-down"></i> Сначала новые
+      </button>
+    </div>
+  </div>
+
+  <!-- 📦 Карточки -->
+  <div class="row" id="cardsContainer">
+    <div class="col-md-6 col-lg-4 mb-4 registration-wrapper"
+         th:each="reg : ${registrations}"
+         th:data-teacher-name="${reg.teacherName}"
+         th:data-user-name="${reg.userName}"
+         th:data-date="${#temporals.format(reg.registrationDate, 'yyyy-MM-dd HH:mm')}">
+      <div class="registration-card">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <span class="user-name" th:text="${reg.userName}"></span>
+          <small class="text-muted" th:text="${#temporals.format(reg.registrationDate, 'dd.MM.yyyy HH:mm')}"></small>
+        </div>
+
+        <h5 class="teacher-name mb-3" th:text="${reg.teacherName}"></h5>
+
+        <div class="d-flex flex-wrap mb-2">
+          <span class="card-badge"><i class="fas fa-running"></i><span th:text="${reg.sportType}"></span></span>
+          <span class="card-badge"><i class="fas fa-users"></i><span th:text="${reg.groupName}"></span></span>
+        </div>
+
+        <div class="d-flex flex-wrap">
+          <span class="card-badge"><i class="fas fa-phone"></i><span th:text="${reg.phone}"></span></span>
+          <span class="card-badge"><i class="fas fa-clock"></i><span th:text="${reg.schedule}"></span></span>
+        </div>
+
+        <div class="action-buttons">
+          <a th:href="@{/admin/edit/{id}(id=${reg.id})}" class="btn btn-warning btn-sm-icon" title="Редактировать">
+            <i class="fas fa-edit"></i>
+          </a>
+          <form th:action="@{/admin/delete/{id}(id=${reg.id})}" method="post" onsubmit="return confirm('Удалить запись?');">
+            <button type="submit" class="btn btn-danger btn-sm-icon" title="Удалить">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔙 Кнопка Назад -->
+  <div class="mt-4">
+    <a href="/admin/index1" class="btn btn-secondary">
+      <i class="fas fa-arrow-left me-2"></i>Назад
+    </a>
+  </div>
+</div>
+
+<!-- ✅ JS для фильтрации и сортировки -->
+<script>
+  const teacherFilterInput = document.getElementById('filterInput');
+  const userFilterInput = document.getElementById('userFilterInput');
+  const cardsContainer = document.getElementById('cardsContainer');
+
+  function filterCards() {
+    const teacherFilter = teacherFilterInput.value.toLowerCase();
+    const userFilter = userFilterInput.value.toLowerCase();
+    const cards = cardsContainer.querySelectorAll('.registration-wrapper');
+
+    cards.forEach(card => {
+      const teacherName = card.getAttribute('data-teacher-name').toLowerCase();
+      const userName = card.getAttribute('data-user-name').toLowerCase();
+      const matchesTeacher = teacherName.includes(teacherFilter);
+      const matchesUser = userName.includes(userFilter);
+      card.style.display = matchesTeacher && matchesUser ? '' : 'none';
+    });
+  }
+
+  teacherFilterInput.addEventListener('input', filterCards);
+  userFilterInput.addEventListener('input', filterCards);
+
+  function sortCards(asc = true) {
+    const cards = Array.from(cardsContainer.querySelectorAll('.registration-wrapper'));
+    cards.sort((a, b) => {
+      const dateA = new Date(a.getAttribute('data-date'));
+      const dateB = new Date(b.getAttribute('data-date'));
+      return asc ? dateA - dateB : dateB - dateA;
+    });
+    cards.forEach(card => cardsContainer.appendChild(card));
+  }
+</script>
+</body>
+</html>

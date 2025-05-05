@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Статистика записей на кружки</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f4f4f4;
+    }
+    .container {
+        width: 90%;
+        max-width: 1000px;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+    }
+    .chart-container {
+        position: relative;
+        height: 500px;
+        width: 100%;
+    }
+    .info-text {
+        text-align: center;
+        margin-top: 20px;
+        color: #666;
+        font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Статистика записей на спортивные кружки</h1>
+  <div class="chart-container">
+    <canvas id="sportChart"></canvas>
+  </div>
+  <p class="info-text" th:if="${#maps.isEmpty(statistics)}">Нет данных для отображения</p>
+</div>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  document.addEventListener('DOMContentLoaded', function() {
+      // Получаем данные из Thymeleaf
+      const statistics = /*[[${statistics}]]*/ {};
+
+      // Если нет данных, не создаем график
+      if (Object.keys(statistics).length === 0) {
+          return;
+      }
+
+      // Подготовка данных
+      const labels = Object.keys(statistics);
+      const data = Object.values(statistics);
+
+      // Цвета для графиков
+      const backgroundColors = [
+          'rgba(54, 162, 235, 0.7)',  // Футбол
+          'rgba(255, 99, 132, 0.7)',   // Гимнастика
+          'rgba(255, 206, 86, 0.7)',    // ОФП
+          'rgba(75, 192, 192, 0.7)',    // Плавание
+          'rgba(153, 102, 255, 0.7)',   // Дзюдо
+          'rgba(255, 159, 64, 0.7)',     // Баскетбол
+          'rgba(199, 199, 199, 0.7)',    // Лёгкая атлетика
+          'rgba(83, 102, 255, 0.7)'      // Самбо
+      ];
+
+      const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
+
+      // Создаем график
+      const ctx = document.getElementById('sportChart').getContext('2d');
+      const chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: labels,
+              datasets: [{
+                  label: 'Количество записей',
+                  data: data,
+                  backgroundColor: backgroundColors,
+                  borderColor: borderColors,
+                  borderWidth: 2,
+                  borderRadius: 5
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                      title: {
+                          display: true,
+                          text: 'Количество записей',
+                          font: {
+                              weight: 'bold',
+                              size: 14
+                          }
+                      },
+                      ticks: {
+                          stepSize: 1
+                      }
+                  },
+                  x: {
+                      title: {
+                          display: true,
+                          text: 'Вид спорта',
+                          font: {
+                              weight: 'bold',
+                              size: 14
+                          }
+                      }
+                  }
+              },
+              plugins: {
+                  legend: {
+                      display: false
+                  },
+                  tooltip: {
+                      callbacks: {
+                          label: function(context) {
+                              return context.parsed.y + ' записей';
+                          }
+                      }
+                  },
+                  title: {
+                      display: true,
+                      text: 'Распределение записей по видам спорта',
+                      font: {
+                          size: 18
+                      },
+                      padding: {
+                          top: 10,
+                          bottom: 30
+                      }
+                  }
+              }
+          }
+      });
+  });
+  /*]]>*/
+</script>
+
+</body>
+</html>

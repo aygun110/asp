@@ -1,5 +1,6 @@
-
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Insert title here</title>
@@ -14,7 +15,7 @@
 <!-- Start Navbar -->
 <nav class="navbar navbar-expand-lg bg-primary fixed-top navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#"> <i class="fa-solid fa-volleyball"> </i> SportSchool.ru </a>
+        <a class="navbar-brand" href="/"> <i class="fa-solid fa-volleyball"> </i> SportSchool.ru </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -28,14 +29,22 @@
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/user"> <i class="fa-solid fa-right-to-bracket"> </i> ЛОГИН</a>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link active" aria-current="page" href="/signin"> <i class="fa-solid fa-right-to-bracket"> </i> ЛОГИН</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
                     <a class="nav-link" href="/register">РЕГИСТРАЦИЯ</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin">  <i class="fa-solid fa-user-tie"></i> АДМИН</a>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <span class="nav-link">
+                        <i class="fas fa-user"></i>
+                        <span th:text="${#authentication.principal.authorities[0].authority == 'ROLE_ADMIN' ? 'ADMIN' : 'USER'}"></span>
+                    </span>
+                </li>
+                <li class="nav-item" th:if="${#authorization.expression('isAuthenticated()')}">
+                    <form th:action="@{/logout}" method="post" class="d-inline">
+                        <button type="submit" class="nav-link btn btn-link">ВЫЙТИ</button>
+                    </form>
                 </li>
             </ul>
         </div>
@@ -47,13 +56,16 @@
 <div class="container-fluid pt-5 mt-0">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="news-tab" data-bs-toggle="tab" href="/news" role="tab" aria-controls="news" aria-selected="true">Новости</a>
+            <a class="nav-link active" id="news-tab" data-bs-toggle="tab" href="/aboutschools" role="tab" aria-controls="aboutschool" aria-selected="true"> Новости</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link" id="schedule-tab" data-bs-toggle="tab" href="/schedule" role="tab" aria-controls="schedule" aria-selected="false">Расписание</a>
+            <a class="nav-link" href="/teachers" role="tab" aria-controls="teachers" aria-selected="false">Преподаватели</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link" id="info-tab" data-bs-toggle="tab" href="/info" role="tab" aria-controls="info" aria-selected="false">Информация о школе</a>
+            <a class="nav-link"  href="/discipline" role="tab" aria-controls="discipline" aria-selected="false"> Дисциплины </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" href="/me" role="tab" aria-controls="me" aria-selected="false"> Об авторе</a>
         </li>
     </ul>
 </div>

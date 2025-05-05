@@ -1,0 +1,425 @@
+
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Преподаватели</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body {
+          background-color: #f8f9fa;
+        }
+        .teacher-icon {
+          font-size: 80px;
+          color: #007bff;
+        }
+        .card-container {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: auto;
+          transition: opacity 0.5s ease, transform 0.5s ease;
+          opacity: 1;
+          transform: scale(1);
+        }
+        .card-container.hidden {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        .card {
+          width: 100%;
+          max-width: 400px;
+          margin: auto;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+        .arrow {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 2rem;
+          color: #007bff;
+          cursor: pointer;
+          z-index: 10;
+        }
+        .arrow-left {
+          left: 20px;
+        }
+        .arrow-right {
+          right: 20px;
+        }
+        .dots {
+          display: flex;
+          justify-content: center;
+          margin-top: 20px;
+        }
+        .dot {
+          width: 12px;
+          height: 12px;
+          margin: 0 6px;
+          border-radius: 50%;
+          background-color: #ccc;
+          cursor: pointer;
+          transition: background-color 0.3s;
+        }
+        .dot.active {
+          background-color: #007bff;
+        }
+        .filter-container {
+          margin-bottom: 20px;
+          display: flex;
+          justify-content: center;
+        }
+        .collapse-form {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.4s ease, opacity 0.4s ease;
+          opacity: 0;
+        }
+        .collapse-form.show {
+          max-height: 400px;
+          opacity: 1;
+          margin-top: 1rem;
+        }
+        .admin-badge {
+            font-size: 1rem;
+            padding: 0.35em 0.65em;
+        }
+        #adminTeacherCard, #userTeacherCard {
+            display: block;
+        }
+
+    </style>
+</head>
+<body>
+<!-- Добавленное уведомление об успешной записи -->
+<div th:if="${param.success}" class="alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3" role="alert" style="z-index: 1000;">
+    <strong>Успешно!</strong> Вы записаны к преподавателю.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="container mt-5 pt-3">
+    <!-- Общий заголовок -->
+    <h2 class="mb-4 text-center">🧑‍🏫 Преподаватели</h2>
+
+    <!-- Блок для администратора -->
+    <div th:if="${#authentication.principal.authorities.?[authority == 'ROLE_ADMIN'].size() > 0}" id="adminSection">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- Заголовок "Управление преподавателями" слева -->
+            <h3 class="mb-0">Управление преподавателями</h3>
+
+            <!-- Кнопки справа -->
+            <div class="d-flex">
+                <!-- Кнопка "История записей" -->
+                <button class="btn btn-primary me-2" th:onclick="'window.location.href=\'' + @{/admin/history} + '\''">
+                    <i class="fas fa-history me-2"></i>История записей
+                </button>
+                <!-- Кнопка "Статистика" -->
+                <button class="btn btn-secondary" th:onclick="'window.location.href=\'' + @{/admin/statistics} + '\''">
+                    <i class="fas fa-chart-line"></i>
+                </button>
+            </div>
+        </div>
+
+        <p class="text-center mb-4">
+            В нашей спортивной школе работает команда опытных и квалифицированных преподавателей, преданных своему делу.
+        </p>
+
+        <!-- Фильтрация по видам спорта для админа -->
+        <div class="filter-container">
+            <select id="adminSportFilter" class="form-select w-50" onchange="filterAdminTeachers()">
+                <option value="all">Все виды спорта</option>
+                <option value="Футбол">Футбол</option>
+                <option value="Гимнастика">Гимнастика</option>
+                <option value="ОФП">ОФП / Атлетика</option>
+                <option value="Плавание">Плавание</option>
+                <option value="Дзюдо">Дзюдо / Боевые искусства</option>
+                <option value="Баскетбол">Баскетбол</option>
+                <option value="Лёгкая атлетика">Лёгкая атлетика</option>
+                <option value="Самбо">Самбо</option>
+            </select>
+        </div>
+
+        <!-- Карусель преподавателей для админа -->
+        <div class="card-container" id="adminCardContainer">
+            <div id="adminTeacherCard" class="card shadow p-4">
+                <!-- Контент будет заполнен JavaScript -->
+            </div>
+        </div>
+
+        <!-- Стрелки навигации для админа -->
+        <div class="arrow arrow-left" onclick="changeAdminSlide(-1)">
+            <i class="fa-solid fa-chevron-left"></i>
+        </div>
+        <div class="arrow arrow-right" onclick="changeAdminSlide(1)">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <!-- Точки навигации для админа -->
+        <div class="dots" id="adminDotsContainer"></div>
+    </div>
+
+
+    <!-- Блок для обычного пользователя -->
+    <div th:unless="${#authentication.principal.authorities.?[authority == 'ROLE_ADMIN'].size() > 0}" id="userSection">
+        <p class="text-center mb-4">
+            В нашей спортивной школе работает команда опытных и квалифицированных преподавателей, преданных своему делу.
+        </p>
+
+        <!-- Фильтрация по видам спорта для пользователя -->
+        <div class="filter-container">
+            <select id="userSportFilter" class="form-select w-50" onchange="filterUserTeachers()">
+                <option value="all">Все виды спорта</option>
+                <option value="Футбол">Футбол</option>
+                <option value="Гимнастика">Гимнастика</option>
+                <option value="ОФП">ОФП / Атлетика</option>
+                <option value="Плавание">Плавание</option>
+                <option value="Дзюдо">Дзюдо / Боевые искусства</option>
+                <option value="Баскетбол">Баскетбол</option>
+                <option value="Лёгкая атлетика">Лёгкая атлетика</option>
+                <option value="Самбо">Самбо</option>
+            </select>
+        </div>
+
+        <!-- Карусель преподавателей для пользователя -->
+        <div class="card-container" id="userCardContainer">
+            <div id="userTeacherCard" class="card shadow p-4">
+                <!-- Контент будет заполнен JavaScript -->
+            </div>
+        </div>
+
+        <!-- Стрелки навигации для пользователя -->
+        <div class="arrow arrow-left" onclick="changeUserSlide(-1)">
+            <i class="fa-solid fa-chevron-left"></i>
+        </div>
+        <div class="arrow arrow-right" onclick="changeUserSlide(1)">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <!-- Точки навигации для пользователя -->
+        <div class="dots" id="userDotsContainer"></div>
+    </div>
+</div>
+
+<script>
+    const teachers = [
+      {
+        name: "Иванов Алексей Сергеевич",
+        sport: "Футбол",
+        text: "42 года<br>Тренер по футболу, мастер спорта, опыт работы более 10 лет.",
+        schedule: "Пн, Ср, Пт: 16:00-20:00"
+      },
+      {
+        name: "Петрова Марина Викторовна",
+        sport: "Гимнастика",
+        text: "38 лет<br>Преподаватель по художественной гимнастике, судья международной категории.",
+        schedule: "Вт, Чт: 15:00-19:00, Сб: 10:00-14:00"
+      },
+      {
+        name: "Смирнов Дмитрий Павлович",
+        sport: "ОФП",
+        text: "45 лет<br>Инструктор по общефизической подготовке, кандидат педагогических наук.",
+        schedule: "Пн-Пт: 9:00-12:00, 17:00-20:00"
+      },
+      {
+        name: "Кузнецова Елена Александровна",
+        sport: "Плавание",
+        text: "34 года<br>Тренер по плаванию, многократный призёр всероссийских соревнований.",
+        schedule: "Вт, Чт, Сб: 7:00-10:00, 16:00-19:00"
+      },
+      {
+        name: "Орлов Николай Игоревич",
+        sport: "Дзюдо",
+        text: "40 лет<br>Преподаватель по дзюдо, чёрный пояс, участник международных турниров.",
+        schedule: "Пн, Ср, Пт: 18:00-21:00"
+      },
+      {
+        name: "Фёдоров Артём Владимирович",
+        sport: "Баскетбол",
+        text: "36 лет<br>Тренер по баскетболу, КМС, преподаватель по командным видам спорта.",
+        schedule: "Вт, Чт: 17:00-20:00, Сб: 11:00-15:00"
+      },
+      {
+        name: "Громова Анна Сергеевна",
+        sport: "ОФП",
+        text: "29 лет<br>Специалист по ОФП и лёгкой атлетике, участник всероссийских марафонов.",
+        schedule: "Пн-Сб: 8:00-11:00"
+      },
+      {
+        name: "Мельников Степан Аркадьевич",
+        sport: "Самбо",
+        text: "43 года<br>Тренер по самбо, мастер спорта, преподаватель боевых искусств.",
+        schedule: "Пн, Ср, Пт: 19:00-22:00"
+      },
+      {
+        name: "Лебедева Ирина Юрьевна",
+        sport: "Лёгкая атлетика",
+        text: "32 года<br>Тренер по лёгкой атлетике, специализация – спринт и прыжки в длину.",
+        schedule: "Вт, Чт: 16:00-19:00, Сб: 9:00-12:00"
+      }
+    ];
+
+    // Объекты с текущими данными
+    const carousels = {
+      admin: {
+        currentIndex: 0,
+        filteredTeachers: teachers,
+        cardId: "adminTeacherCard",
+        containerId: "adminCardContainer",
+        dotsContainerId: "adminDotsContainer",
+        isAdmin: true,
+      },
+      user: {
+        currentIndex: 0,
+        filteredTeachers: teachers,
+        cardId: "userTeacherCard",
+        containerId: "userCardContainer",
+        dotsContainerId: "userDotsContainer",
+        isAdmin: false,
+      }
+    };
+
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', function () {
+      renderCard("admin");
+      renderCard("user");
+      updateDots("admin");
+      updateDots("user");
+    });
+
+    // Рендер карточки
+    function renderCard(role) {
+      const carousel = carousels[role];
+      const teacher = carousel.filteredTeachers[carousel.currentIndex];
+      const card = document.getElementById(carousel.cardId);
+      const container = document.getElementById(carousel.containerId);
+
+      container.classList.add("hidden");
+
+      setTimeout(() => {
+        card.innerHTML = `
+          <i class="fa-solid fa-circle-user teacher-icon mb-3"></i>
+          <h5 class="card-title">${teacher.name}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">${teacher.sport}</h6>
+          <p class="card-text">${teacher.text}</p>
+          <div class="mt-3">
+              ${!carousel.isAdmin
+                ? `<button class="btn btn-success w-100" onclick="toggleUserForm()">
+                     <i class="fas fa-calendar-plus me-2"></i>Записаться
+                   </button>
+                   <div id="userRegisterForm" class="collapse-form">
+                      <form method="post" action="/register-to-teacher" class="mt-3">
+                          <input type="hidden" name="teacherName" value="${teacher.name}">
+                          <input type="hidden" name="sportType" value="${teacher.sport}">
+
+                          <div class="mb-3">
+                              <label class="form-label">Ваше имя</label>
+                              <input type="text" name="userName" class="form-control" required>
+                          </div>
+
+                          <div class="mb-3">
+                              <label class="form-label">Телефон</label>
+                              <input type="tel" name="phone" class="form-control" required>
+                          </div>
+                          <div class="mb-3">
+                              <label class="form-label">Группа</label>
+                              <input type="text" name="groupName" class="form-control" required>
+                          </div>
+
+                          <div class="mb-3">
+                             <label class="form-label">Расписание</label>
+                               <input type="text" name="schedule" class="form-control" value="${teacher.schedule}" readonly />
+                           </div>
+
+
+                          <button type="submit" class="btn btn-primary w-100">
+                              <i class="fas fa-check me-2"></i>Подтвердить запись
+                          </button>
+                      </form>
+                   </div>`
+                : ''}
+          </div>
+        `;
+
+        // Плавное возвращение анимации
+        setTimeout(() => {
+          container.classList.remove("hidden");
+        }, 50);
+
+        updateDots(role);
+      }, 250);
+    }
+
+    // Переключение слайдов
+    function changeSlide(role, direction) {
+      const carousel = carousels[role];
+      const len = carousel.filteredTeachers.length;
+      carousel.currentIndex = (carousel.currentIndex + direction + len) % len;
+      renderCard(role);
+    }
+
+    // Фильтрация
+    function filterTeachers(role) {
+      const value = document.getElementById(role + "SportFilter").value;
+      carousels[role].filteredTeachers =
+        value === "all"
+          ? teachers
+          : teachers.filter(t => t.sport === value);
+      carousels[role].currentIndex = 0;
+      renderCard(role);
+      updateDots(role);
+    }
+
+    // Обновление точек
+    function updateDots(role) {
+      const { filteredTeachers, currentIndex, dotsContainerId } = carousels[role];
+      const dotsContainer = document.getElementById(dotsContainerId);
+      dotsContainer.innerHTML = '';
+
+      filteredTeachers.forEach((_, i) => {
+        const dot = document.createElement("div");
+        dot.className = `dot ${i === currentIndex ? "active" : ""}`;
+        dot.onclick = () => {
+          carousels[role].currentIndex = i;
+          renderCard(role);
+        };
+        dotsContainer.appendChild(dot);
+      });
+    }
+
+    // Открытие/закрытие формы записи
+    function toggleUserForm() {
+      const form = document.getElementById("userRegisterForm");
+      form.classList.toggle("show");
+    }
+
+    // Для фильтра
+    function filterAdminTeachers() {
+      filterTeachers("admin");
+    }
+
+    function filterUserTeachers() {
+      filterTeachers("user");
+    }
+
+    // Для стрелок
+    function changeAdminSlide(dir) {
+      changeSlide("admin", dir);
+    }
+
+    function changeUserSlide(dir) {
+      changeSlide("user", dir);
+    }
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+

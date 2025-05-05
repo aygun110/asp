@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base::layout(~{::section})}">
@@ -24,7 +26,6 @@
                         <!-- Сообщение об успешной регистрации, если оно есть -->
                         <div th:if="${session.succMsg}" th:text="${session.succMsg}" class="alert alert-success"></div>
 
-                        <!-- Форма регистрации -->
                         <form action="/saveUser" method="POST" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label class="form-label">ФИО</label>
@@ -39,23 +40,29 @@
                                 <input required class="form-control" name="password" type="password">
                             </div>
                             <div class="mb-3">
+                                <label class="form-label">Пароль еще раз</label>
+                                <input required class="form-control" name="cpassword" type="password">
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">Profile Image</label>
                                 <input class="form-control" name="img" type="file">
                             </div>
+
+                            <!-- Выбор роли -->
                             <div class="mb-3">
                                 <label class="form-label">Роль</label>
-                                <select class="form-control" name="role" required>
+                                <select required class="form-control" name="role">
                                     <option value="USER">Пользователь</option>
                                     <option value="ADMIN">Админ</option>
                                 </select>
                             </div>
 
-                            <!-- Новый выбор для деятельности -->
+                            <!-- Выбор деятельности -->
                             <div class="mb-3">
                                 <label class="form-label">Деятельность</label>
-                                <select class="form-control" name="activity" required>
-                                    <option value="Тренер">Тренер</option>
+                                <select required class="form-control" name="activity" >
                                     <option value="Ученик">Ученик</option>
+                                    <option value="Тренер">Тренер</option>
                                 </select>
                             </div>
 
@@ -69,4 +76,5 @@
 </section>
 </body>
 </html>
+
 

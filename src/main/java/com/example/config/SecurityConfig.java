@@ -14,7 +14,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Шифруем пароль!
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
@@ -24,10 +24,10 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
     }
 
     @Bean
@@ -35,24 +35,18 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/saveUser").permitAll()
-                        .requestMatchers("/user/**").hasRole("USER") // Проверка роли без "ROLE_"
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // Проверка роли без "ROLE_"
-                        .requestMatchers("/**").permitAll())
+                        .requestMatchers("/saveUser").permitAll()  // Разрешаем POST-запросы на /saveUser
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/**").permitAll())  // Остальные URL также разрешены для всех
                 .formLogin(form -> form
                         .loginPage("/signin")
                         .loginProcessingUrl("/logins")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .successHandler(new AuthSuccessHandlerImpl()) // Перенаправление после входа
+                        .successHandler(new AuthSuccessHandlerImpl())
                         .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/signin") // Перенаправление после выхода
-                        .permitAll());
-
+                .logout(logout -> logout.permitAll());
         return http.build();
     }
 

@@ -3,10 +3,17 @@ package com.example.controller;
 import com.example.service.UserService;
 import com.example.model.UserDtls;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
+import com.example.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -32,99 +39,71 @@ public class HomeController {
         return "logins";
     }
 
-    @PostMapping("/loginSuccess")
-    public String loginSuccess(HttpSession session) {
-        UserDtls loggedUser = (UserDtls) session.getAttribute("loggedUser");
 
-        if (loggedUser != null) {
-            if ("ADMIN".equals(loggedUser.getRole())) {
-                return "redirect:/admin/users";
-            } else {
-                return "redirect:/user/home";
-            }
-        }
-        return "redirect:/signin";
+    @GetMapping("/register")
+    public String register() {
+        return "register";
     }
 
 
-    @GetMapping("/news")
-    public String news() {
-        return "news";
-    }
 
     @GetMapping("/schedule")
     public String schedule() {
         return "schedule";
     }
 
-    @GetMapping("/aboutschool")
-    public String aboutschool() {
-        return "aboutschool";
+
+    @GetMapping("/teachers")
+    public String teachers() {
+        return "teachers"; // Обратите внимание на "base" вместо "layout"
     }
 
-    @GetMapping("/admin/home")
-    public String adminHome() {
-        return "admin/home";
+    @GetMapping("/discipline")
+    public String discipline() {
+        return "discipline"; // Обратите внимание на "base" вместо "layout"
     }
 
-    @RequestMapping("/register")
-    public String registerPage(HttpSession session) {
-// Очистка старых сообщений перед загрузкой страницы
-        session.removeAttribute("errorMsg");
-        session.removeAttribute("succMsg");
-        return "register";
+
+    @GetMapping("/me")
+    public String me() {
+        return "me"; // Обратите внимание на "base" вместо "layout"
     }
+
 
     @PostMapping("/saveUser")
-    public String saveUser(@ModelAttribute UserDtls user,
-                           @RequestParam("img") MultipartFile file,
-                           @RequestParam("role") String role,
-                           @RequestParam("activity") String activity, // Получаем активность
-                           HttpSession session) throws IOException {
+    public String saveUser(@ModelAttribute UserDtls user, @RequestParam("img") MultipartFile file, HttpSession session)
+            throws IOException {
 
-// Проверка на существующий email
         Boolean existsEmail = userService.existsEmail(user.getEmail());
 
         if (existsEmail) {
             session.setAttribute("errorMsg", "Email already exists");
         } else {
-// Установка роли
-            if ("ADMIN".equals(role)) {
-                user.setRole("ADMIN");
-            } else {
-                user.setRole("USER");
-            }
-
-// Установка деятельности
-            user.setActivity(activity); // Сохраняем выбранную деятельность
-
-// Обработка изображения
             String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
             user.setProfileImage(imageName);
+            UserDtls saveUser = userService.saveUser(user);
 
-// Сохранение пользователя
-            UserDtls savedUser = userService.saveUser(user);
-
-            if (!ObjectUtils.isEmpty(savedUser)) {
-// Сохранение изображения
+            if (!ObjectUtils.isEmpty(saveUser)) {
                 if (!file.isEmpty()) {
+                    // Путь для сохранения изображения
                     File saveDir = new File("src/main/resources/static/img/profile_img");
+
+                    // Создаем директорию, если её нет
                     if (!saveDir.exists()) {
                         saveDir.mkdirs();
                     }
+
+                    // Путь к файлу
                     Path path = Paths.get(saveDir.getAbsolutePath() + File.separator + file.getOriginalFilename());
+
+                    // Копируем файл в указанную директорию
                     Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
                 }
-
                 session.setAttribute("succMsg", "Registration successful");
             } else {
                 session.setAttribute("errorMsg", "Something went wrong on server");
             }
         }
-
-// После регистрации редирект на страницу входа
         return "redirect:/signin";
     }
-
-
 }

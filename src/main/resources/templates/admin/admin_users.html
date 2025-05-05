@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{base::layout(~{::section})}">
+<head>
+  <meta charset="UTF-8">
+  <title>Пользователи</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+<section>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-end mb-3" style="padding-right: 20px;">
+        <a th:href="@{/admin/index1}" class="btn btn-primary">На главную</a>
+      </div>
+    </div>
+
+    <!-- Таблица с пользователями -->
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <div class="card">
+          <div class="card-header text-center fs-4">Пользователи</div>
+
+          <div class="card-body">
+            <!-- Таблица с пользователями -->
+            <table class="table table-bordered">
+              <thead>
+              <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Email</th>
+                <th>Роль</th>
+                <th>Деятельность</th> <!-- Новый столбец для деятельности -->
+                <th>Действия</th>
+              </tr>
+              </thead>
+              <tbody>
+              <!-- Используем th:each для перебора списка пользователей -->
+              <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.role}"></td>
+                <td th:text="${user.activity}"></td> <!-- Отображение деятельности -->
+                <td>
+                  <!-- Кнопка редактирования -->
+                  <a th:href="@{/admin/users/edit/{id}(id=${user.id})}" class="btn btn-warning btn-sm">Редактировать</a>
+                  <!-- Кнопка удаления -->
+                  <a th:href="@{/admin/users/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm"
+                     onclick="return confirm('Вы уверены?')">Удалить</a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div> <!-- Закрываем card-body -->
+        </div> <!-- Закрываем card -->
+      </div> <!-- Закрываем col-md-8 -->
+    </div> <!-- Закрываем row -->
+  </div> <!-- Закрываем container -->
+</section>
+</body>
+</html>

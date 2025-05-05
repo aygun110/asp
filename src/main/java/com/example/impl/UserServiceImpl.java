@@ -1,10 +1,15 @@
+
 package com.example.impl;
+
 import com.example.model.UserDtls;
+import com.example.model.TeacherRegistration;
 import com.example.repository.UserRepository;
+import com.example.repository.TeacherRegistrationRepository;
 import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -12,6 +17,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TeacherRegistrationRepository teacherRegistrationRepository;
 
     @Override
     public UserDtls saveUser(UserDtls user) {
@@ -24,30 +32,37 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDtls> getAllUsers(String role) {
-// Если передана роль, фильтруем пользователей по роли
-        if (role != null && !role.isEmpty()) {
-            return userRepository.findByRole(role); // Метод для поиска пользователей по роли
-        }
-// Если роль не передана, возвращаем всех пользователей
-        return userRepository.findAll();
-    }
-
-    // В классе UserServiceImpl
-    @Override
     public UserDtls getUserById(Long id) {
-        return userRepository.findById(id).orElse(null); // Или другая логика поиска по ID
+        return userRepository.findById(id).orElse(null);
     }
 
-    // В классе UserServiceImpl
     @Override
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id); // или аналогичный метод в зависимости от вашего репозитория
+    public List<UserDtls> getAllUsers(String role) {
+        if (role == null || role.trim().isEmpty()) {
+            return userRepository.findAll(); // Возвращает всех пользователей
+        }
+        return userRepository.findByRole(role); // Возвращает по роли, если указана
     }
 
 
     @Override
     public Boolean existsEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public void saveTeacherRegistration(TeacherRegistration registration) {
+        registration.setRegistrationDate(LocalDateTime.now());
+        teacherRegistrationRepository.save(registration);
+    }
+
+    @Override
+    public List<TeacherRegistration> getAllRegistrations() {
+        return teacherRegistrationRepository.findAllByOrderByRegistrationDateDesc();
     }
 }
