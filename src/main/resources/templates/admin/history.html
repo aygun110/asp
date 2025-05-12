@@ -10,6 +10,9 @@
       background: #f8f9fa;
     }
 
+    .page-title {
+      margin-top: 10px; /* можно увеличить или уменьшить по вкусу */
+    }
     .registration-card {
       background: linear-gradient(145deg, #ffffff, #f0f0f0);
       border: none;
@@ -96,13 +99,49 @@
     .sort-buttons button {
       margin-left: 5px;
     }
+
+    /* Стиль для кнопки назад как в примере */
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      background-color: #0056b3;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      margin-bottom: -50px; /* Добавляем отступ снизу */
+    }
+
+    .back-button:hover {
+      background-color: #003f88;
+      color: white;
+    }
+
+    /* Добавляем класс для основного контента с отступом */
+    .content-with-padding {
+      padding-top: 60px; /* Увеличиваем отступ сверху */
+    }
   </style>
 </head>
 <body>
-<div class="container mt-5">
-  <h2 class="mb-4">История записей к преподавателям</h2>
 
-  <!-- 🔍 Панель фильтрации и сортировки -->
+<a href="/teachers" class="back-button">
+  &lt; Назад
+</a>
+
+<div style="margin-top: 30px;"></div>
+
+<div class="container content-with-padding">
+  <h2 class="mb-4 page-title">
+
+        История записей к преподавателям</h2>
+
+
   <div class="filter-sort-bar">
     <div class="d-flex gap-2">
       <input type="text" id="filterInput" class="form-control" placeholder="Фильтр по преподавателю...">
@@ -157,15 +196,15 @@
     </div>
   </div>
 
-  <!-- 🔙 Кнопка Назад -->
+
   <div class="mt-4">
-    <a href="/admin/index1" class="btn btn-secondary">
-      <i class="fas fa-arrow-left me-2"></i>Назад
+    <a href="/teachers" class="btn btn-secondary back-button">
+      &lt; Назад
     </a>
   </div>
 </div>
 
-<!-- ✅ JS для фильтрации и сортировки -->
+
 <script>
   const teacherFilterInput = document.getElementById('filterInput');
   const userFilterInput = document.getElementById('userFilterInput');

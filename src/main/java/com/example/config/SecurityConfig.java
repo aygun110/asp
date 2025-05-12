@@ -35,10 +35,12 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/saveUser").permitAll()  // Разрешаем POST-запросы на /saveUser
+                        .requestMatchers("/saveUser").permitAll()
+                        // Явно разрешаем POST-запросы для удаления и обновления
+                        .requestMatchers("/admin/delete/**", "/admin/update/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/**").permitAll())  // Остальные URL также разрешены для всех
+                        .requestMatchers("/**").permitAll())
                 .formLogin(form -> form
                         .loginPage("/signin")
                         .loginProcessingUrl("/logins")
@@ -49,5 +51,4 @@ public class SecurityConfig {
                 .logout(logout -> logout.permitAll());
         return http.build();
     }
-
 }

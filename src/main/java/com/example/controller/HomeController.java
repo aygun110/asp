@@ -46,7 +46,6 @@ public class HomeController {
     }
 
 
-
     @GetMapping("/schedule")
     public String schedule() {
         return "schedule";
@@ -55,50 +54,37 @@ public class HomeController {
 
     @GetMapping("/teachers")
     public String teachers() {
-        return "teachers"; // Обратите внимание на "base" вместо "layout"
+        return "teachers";
     }
 
     @GetMapping("/discipline")
     public String discipline() {
-        return "discipline"; // Обратите внимание на "base" вместо "layout"
+        return "discipline";
     }
 
 
     @GetMapping("/me")
     public String me() {
-        return "me"; // Обратите внимание на "base" вместо "layout"
+        return "me";
     }
 
 
     @PostMapping("/saveUser")
-    public String saveUser(@ModelAttribute UserDtls user, @RequestParam("img") MultipartFile file, HttpSession session)
-            throws IOException {
+    public String saveUser(@ModelAttribute UserDtls user, HttpSession session) {
 
         Boolean existsEmail = userService.existsEmail(user.getEmail());
 
         if (existsEmail) {
             session.setAttribute("errorMsg", "Email already exists");
         } else {
-            String imageName = file.isEmpty() ? "default.jpg" : file.getOriginalFilename();
-            user.setProfileImage(imageName);
+            // Если роль "Админ", очищаем поле activity, чтобы оно не сохранялось
+            if ("ADMIN".equals(user.getRole())) {
+                user.setActivity(null); // Очищаем поле activity
+            }
+
             UserDtls saveUser = userService.saveUser(user);
 
             if (!ObjectUtils.isEmpty(saveUser)) {
-                if (!file.isEmpty()) {
-                    // Путь для сохранения изображения
-                    File saveDir = new File("src/main/resources/static/img/profile_img");
-
-                    // Создаем директорию, если её нет
-                    if (!saveDir.exists()) {
-                        saveDir.mkdirs();
-                    }
-
-                    // Путь к файлу
-                    Path path = Paths.get(saveDir.getAbsolutePath() + File.separator + file.getOriginalFilename());
-
-                    // Копируем файл в указанную директорию
-                    Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-                }
                 session.setAttribute("succMsg", "Registration successful");
             } else {
                 session.setAttribute("errorMsg", "Something went wrong on server");

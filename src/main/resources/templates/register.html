@@ -1,32 +1,49 @@
-
-
 <!DOCTYPE html>
 <html lang="ru" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{base::layout(~{::section})}">
 <head>
     <meta charset="UTF-8">
     <title>Вход в систему</title>
+    <style>
+        .image-container {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .image-container img {
+            width: auto;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Сдвигаем форму немного влево */
+        .form-container {
+            margin-left: 150px; /* Немного сдвигаем влево */
+        }
+    </style>
 </head>
 <body>
 <section>
     <div class="container mt-2 p-5">
         <div class="row">
-            <div class="col-md-5 p-3">
-                <img alt="" src="img/sportschool.png" width="100%" height="400px">
+            <div class="col-md-6 p-3">
+                <div class="image-container">
+                    <img alt="sportschool" src="https://i.pinimg.com/originals/62/57/52/625752fb4beaf0b05b2a0315cff4ad79.gif">
+                </div>
             </div>
-            <div class="col-md-6 p-2">
+            <div class="col-md-5 offset-md-1 p-2 form-container">
                 <div class="card shadow p-3 mb-5">
                     <div class="card-header">
                         <p class="fs-4 text-center">Регистрация</p>
                     </div>
                     <div class="card-body">
-                        <!-- Сообщение об ошибке, если оно есть -->
                         <div th:if="${session.errorMsg}" th:text="${session.errorMsg}" class="alert alert-danger"></div>
-
-                        <!-- Сообщение об успешной регистрации, если оно есть -->
                         <div th:if="${session.succMsg}" th:text="${session.succMsg}" class="alert alert-success"></div>
 
-                        <form action="/saveUser" method="POST" enctype="multipart/form-data">
+                        <form id="registrationForm" action="/saveUser" method="POST" enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label class="form-label">ФИО</label>
                                 <input required class="form-control" name="name" type="text">
@@ -39,28 +56,18 @@
                                 <label class="form-label">Пароль</label>
                                 <input required class="form-control" name="password" type="password">
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Пароль еще раз</label>
-                                <input required class="form-control" name="cpassword" type="password">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Profile Image</label>
-                                <input class="form-control" name="img" type="file">
-                            </div>
 
-                            <!-- Выбор роли -->
                             <div class="mb-3">
                                 <label class="form-label">Роль</label>
-                                <select required class="form-control" name="role">
+                                <select required class="form-control" name="role" id="roleSelect" onchange="toggleActivityField()">
                                     <option value="USER">Пользователь</option>
                                     <option value="ADMIN">Админ</option>
                                 </select>
                             </div>
 
-                            <!-- Выбор деятельности -->
-                            <div class="mb-3">
+                            <div class="mb-3" id="activityField">
                                 <label class="form-label">Деятельность</label>
-                                <select required class="form-control" name="activity" >
+                                <select class="form-control" name="activity" id="activitySelect">
                                     <option value="Ученик">Ученик</option>
                                     <option value="Тренер">Тренер</option>
                                 </select>
@@ -73,8 +80,39 @@
             </div>
         </div>
     </div>
+
+    <script>
+
+        function toggleActivityField() {
+            const roleSelect = document.getElementById('roleSelect');
+            const activityField = document.getElementById('activityField');
+            const activitySelect = document.getElementById('activitySelect');
+
+            if (roleSelect.value === 'ADMIN') {
+                activityField.style.display = 'none';
+                activitySelect.removeAttribute('required');
+                activitySelect.disabled = true; // Отключаем select
+            } else {
+                activityField.style.display = 'block';
+                activitySelect.setAttribute('required', '');
+                activitySelect.disabled = false; // Включаем select
+            }
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            const roleSelect = document.getElementById('roleSelect');
+            const activitySelect = document.getElementById('activitySelect');
+
+            // Если выбран ADMIN, очищаем значение деятельности
+            if (roleSelect.value === 'ADMIN') {
+                activitySelect.value = '';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            toggleActivityField();
+        });
+    </script>
 </section>
 </body>
 </html>
-
-

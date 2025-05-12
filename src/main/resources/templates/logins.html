@@ -1,39 +1,160 @@
 <!DOCTYPE html>
-<html lang="ru"
-      xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{base::layout(~{::section})}">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" th:replace="~{base::layout(~{::section})}">
 <head>
   <meta charset="UTF-8">
-  <title >Вход в систему</title>
+  <title>Вход в систему</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #6e7dff, #a1c4fd);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      padding: 10px 14px;
+      border: 2px solid #ccc;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    .text-center a {
+      color: #007bff;
+      transition: color 0.3s ease;
+    }
+
+    .text-center a:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+    }
+
+    .card-header {
+      background-color: #fff;
+      border-radius: 15px 15px 0 0;
+      padding: 20px;
+    }
+
+    .card-body {
+      padding: 30px;
+    }
+
+    .card-footer {
+      background-color: #f9f9f9;
+      border-radius: 0 0 15px 15px;
+      padding: 15px;
+    }
+
+    .container {
+      margin-top: 100px;
+    }
+
+    .img-fluid {
+      transition: transform 0.3s ease;
+      border-radius: 15px;
+      max-height: 300px;
+      object-fit: cover;
+      margin-top: 150px; /* Сдвигаем изображение вниз */
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      border: 4px solid rgba(255, 255, 255, 0.8);
+      filter: drop-shadow(0 0 10px rgba(110, 125, 255, 0.3));
+    }
+
+    .img-fluid:hover {
+      transform: scale(1.03);
+      border-color: rgba(255, 255, 255, 1);
+    }
+
+    .row {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .col-md-6 {
+      padding: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .col-md-6 {
+        width: 100%;
+      }
+      .container {
+        padding: 20px;
+      }
+      .img-fluid {
+        margin-top: 20px;
+        max-height: 250px;
+        margin-left: -40px;
+      }
+    }
+  </style>
 </head>
 <body>
 <section>
-  <div class="container mt-2 p-5">
-    <div class= "row ">
-      <div class="col-md-6 mt-3 p-5">
-        <img alt="" src="img/sportschool.png" width="100%" height="400px">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6 text-center mb-4 mb-md-0">
+        <!-- Ваша оригинальная гифка с улучшенным оформлением -->
+        <div style="height: 50px;">
+        </div> <!-- Пустое пространство -->
+        <img alt="sportschool" src="https://i.pinimg.com/originals/fa/cd/b1/facdb1baa1e144c06967b187a6f212c1.gif" class="gif-small">
       </div>
-      <div class="col-md-6 p-5">
-        <div class="card shadow p-3 mb-5">
+      <div class="col-md-6" >
+        <div class="card shadow p-4">
           <div class="card-header">
-            <p class="fs-4 text-center"> Авторизация</p>
+            <p class="fs-4 text-center">Авторизация</p>
           </div>
           <div class="card-body">
             <form action="/logins" method="POST" enctype="multipart/form-data">
               <div class="mb-3">
-                <label class = "form-label">Email/ логин </label> <input
-                      class="form-control" name="email" type="email"> </div>
-              <div class="mb-3">
-                <label class = "form-label">Пароль </label>
-                <input class="form-control" name="password" type="password">
+                <label class="form-label">Email / логин</label>
+                <input class="form-control" name="email" type="email" required>
               </div>
-              <button type = "submit" class = "btn bg-primary text-white col-md-12">Войти </button>
+              <div class="mb-3">
+                <label class="form-label">Пароль</label>
+                <input class="form-control" name="password" type="password" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Войти</button>
             </form>
           </div>
+          <div class="card-footer text-center bg-white border-0">
+            Нет учетной записи? <a href="/register" class="text-decoration-none">Создать</a>
 
-          <div class= "card-footer text-center">
-            <a href="#" class = "text-decoration-none">Забыл пароль </a> <br>
-            Нет учетной записи? <a href="#" class=" text-decoration-none ">Создать</a>
           </div>
         </div>
       </div>
@@ -42,3 +163,4 @@
 </section>
 </body>
 </html>
+

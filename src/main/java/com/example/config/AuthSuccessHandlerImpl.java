@@ -19,16 +19,16 @@ public class AuthSuccessHandlerImpl implements AuthenticationSuccessHandler {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
         for (GrantedAuthority authority : authorities) {
-            if (authority.getAuthority().equals("ROLE_ADMIN")) { // Добавлен "ROLE_"
+            if (authority.getAuthority().equals("ROLE_ADMIN")) {
                 response.sendRedirect("/admin/users");
                 return;
-            } else if (authority.getAuthority().equals("ROLE_USER")) { // Добавлен "ROLE_"
+            } else if (authority.getAuthority().equals("ROLE_USER")) {
                 response.sendRedirect("/user/home");
                 return;
             }
         }
 
-        response.sendRedirect("/"); // На случай, если роль не определена
+        response.sendRedirect("/");
     }
 }
 

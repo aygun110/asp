@@ -34,8 +34,17 @@ public class AdminController {
     // Обработка редактирования пользователя
     @PostMapping("/admin/users/edit/{id}")
     public String updateUser(@PathVariable("id") Long id,
-                             @ModelAttribute UserDtls user,
-                             @RequestParam(value = "password", required = false) String password) {
+                             @ModelAttribute("user") UserDtls user,
+                             @RequestParam(value = "password", required = false) String password,
+                             Model model) {
+
+        // Проверка: если email уже занят другим пользователем
+        UserDtls existingByEmail = userService.getUserByEmail(user.getEmail());
+        if (existingByEmail != null && !existingByEmail.getId().equals(id)) {
+            model.addAttribute("user", user); // сохранить заполненные данные в форме
+            model.addAttribute("emailError", "Этот email уже используется другим пользователем.");
+            return "admin/editUser";
+        }
 
         user.setId(id);
 
@@ -47,8 +56,9 @@ public class AdminController {
         }
 
         userService.saveUser(user);
-        return "redirect:/admin/users"; // Перенаправление на страницу с пользователями после обновления
+        return "redirect:/admin/users";
     }
+
 
     // Удаление пользователя
     @GetMapping("/admin/users/delete/{id}")
@@ -60,7 +70,7 @@ public class AdminController {
     // Главная страница администратора
     @GetMapping("/admin/index1")
     public String adminHome() {
-        return "admin/index1"; // Открывает шаблон index1.html в папке admin
+        return "admin/index1";
     }
 
 }

@@ -26,9 +26,6 @@ public class UserController {
 
             RedirectAttributes redirectAttributes
     ) {
-        // Здесь сохраняешь в БД:
-        // TeacherRegistration reg = new TeacherRegistration(teacherName, sportType, userName, phone, group);
-        // registrationRepository.save(reg);
 
         redirectAttributes.addAttribute("success", "true");
         return "redirect:/teachers"; // укажи актуальный адрес, куда перенаправлять

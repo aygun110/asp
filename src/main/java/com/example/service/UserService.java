@@ -13,8 +13,10 @@ public interface UserService {
     List<UserDtls> getAllUsers(String role);
     Boolean existsEmail(String email);
     void deleteUser(Long id);
+
     void saveTeacherRegistration(TeacherRegistration registration);
     List<TeacherRegistration> getAllRegistrations();
 
-
+    TeacherRegistration getRegistrationById(Long id);
+    void deleteRegistrationById(Long id);
 }

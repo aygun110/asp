@@ -65,4 +65,16 @@ public class UserServiceImpl implements UserService {
     public List<TeacherRegistration> getAllRegistrations() {
         return teacherRegistrationRepository.findAllByOrderByRegistrationDateDesc();
     }
+
+    @Override
+    public TeacherRegistration getRegistrationById(Long id) {
+        return teacherRegistrationRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void deleteRegistrationById(Long id) {
+        teacherRegistrationRepository.deleteById(id);
+    }
+
 }
+

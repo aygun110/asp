@@ -9,7 +9,6 @@ public class TeacherRegistration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String teacherName;
     private String sportType;
     private String userName;
