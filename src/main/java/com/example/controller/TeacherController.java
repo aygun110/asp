@@ -1,17 +1,24 @@
 package com.example.controller;
 
+import com.example.model.Discipline;
 import com.example.model.TeacherRegistration;
+import com.example.repository.DisciplineRepository;
 import com.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 public class TeacherController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private DisciplineRepository disciplineRepository;
+
 
     @PostMapping("/register-to-teacher")
     public String registerToTeacher(TeacherRegistration registration) {
@@ -23,6 +30,13 @@ public class TeacherController {
     public String showAdminHistory(Model model) {
         model.addAttribute("registrations", userService.getAllRegistrations());
         return "admin/history";
+    }
+
+    @GetMapping("/teachers")
+    public String showTeachersPage(Model model) {
+        List<Discipline> disciplines = disciplineRepository.findAll(); // или sportTypeRepository, если нужно
+        model.addAttribute("disciplines", disciplines);
+        return "teachers"; // имя HTML-шаблона, например teachers.html
     }
 
 

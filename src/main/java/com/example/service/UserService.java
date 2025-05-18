@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.model.Schedule;
 import com.example.model.TeacherRegistration;
 import com.example.model.UserDtls;
 
@@ -16,6 +17,10 @@ public interface UserService {
 
     void saveTeacherRegistration(TeacherRegistration registration);
     List<TeacherRegistration> getAllRegistrations();
+
+    List<Schedule> getAllSchedules();
+    Schedule saveSchedule(Schedule schedule);
+    void deleteSchedule(Long id);
 
     TeacherRegistration getRegistrationById(Long id);
     void deleteRegistrationById(Long id);

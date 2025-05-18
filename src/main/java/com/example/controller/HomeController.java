@@ -46,17 +46,6 @@ public class HomeController {
     }
 
 
-    @GetMapping("/schedule")
-    public String schedule() {
-        return "schedule";
-    }
-
-
-    @GetMapping("/teachers")
-    public String teachers() {
-        return "teachers";
-    }
-
     @GetMapping("/discipline")
     public String discipline() {
         return "discipline";

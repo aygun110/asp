@@ -36,7 +36,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/saveUser").permitAll()
-                        // Явно разрешаем POST-запросы для удаления и обновления
+                        // Настройки для расписания (используйте актуальные пути)
+                        .requestMatchers("/schedule/view").permitAll() // или authenticated()
+                        .requestMatchers("/schedule/list").authenticated()
+                        .requestMatchers("/schedule/admin/**").hasRole("ADMIN")
+                        // Остальные настройки
                         .requestMatchers("/admin/delete/**", "/admin/update/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")

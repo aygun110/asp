@@ -28,7 +28,7 @@ public class UserController {
     ) {
 
         redirectAttributes.addAttribute("success", "true");
-        return "redirect:/teachers"; // укажи актуальный адрес, куда перенаправлять
+        return "redirect:/teachers";
     }
 }
 

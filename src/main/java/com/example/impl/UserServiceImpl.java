@@ -1,8 +1,10 @@
 
 package com.example.impl;
 
+import com.example.model.Schedule;
 import com.example.model.UserDtls;
 import com.example.model.TeacherRegistration;
+import com.example.repository.ScheduleRepository;
 import com.example.repository.UserRepository;
 import com.example.repository.TeacherRegistrationRepository;
 import com.example.service.UserService;
@@ -26,6 +28,20 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
+
+
+    @Override
+    public Schedule saveSchedule(Schedule schedule) {
+        return scheduleRepository.save(schedule);
+    }
+
+    @Override
+    public void deleteSchedule(Long id) {
+        scheduleRepository.deleteById(id);
+    }
     @Override
     public UserDtls getUserByEmail(String email) {
         return userRepository.findByEmail(email);
@@ -76,5 +92,9 @@ public class UserServiceImpl implements UserService {
         teacherRegistrationRepository.deleteById(id);
     }
 
+    @Override
+    public List<Schedule> getAllSchedules() {
+        return scheduleRepository.findAll();
+    }
 }
 
